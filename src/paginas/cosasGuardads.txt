@@ -1,0 +1,260 @@
+import Titulo from "../componentes/Titulo";
+import DataTable from "react-data-table-component";
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+
+function SignosVitales() {
+      const state = { signos: [], tabla: null };
+      const [tabla, setTabla] = useState();
+
+      const location = useLocation();
+      const activoCi = location.state.cedulaRes;
+      const activoNom = location.state.nomRes;
+      const token = location.state.usuToken;
+      const nomCentro = location.state.centro;
+
+      console.log(activoNom);
+
+
+      function renderizarDatos() {
+            const datos = state.signos;
+            let listaInicial = [];
+            let listaInterna = [];
+            let columnasInicial = [
+                  {
+                        name: "Fecha",
+                        selector: row => row.Fecha
+                  },
+                  {
+                        name: "Datos ingresados",
+                        selector: row => row.Datos
+                  }
+            ];
+            let columnasInterno = [
+                  {
+                        name: "Signo",
+                        selector: row => row.Nombre
+                  },
+                  {
+                        name: "Valor",
+                        selector: row => row.Valor
+                  }
+            ];
+
+            for (let i = 0; i < datos.length; i++) {
+                  let StringDatos;
+                  let Presion;
+                  let Azucar;
+                  let Oxigeno;
+                  let Temperatura;
+                  let Pulso;
+                  let Comentarios;
+                  let fecha = datos[i].FechaIngreso;
+
+                  listaInicial.push({
+                        Fecha: fecha
+                  });
+
+                  if (datos[i].PresionMaxima && datos[i].PresionMinima) {
+                        StringDatos += datos[i].PresionMinima + "/" + datos[i].PresionMaxima + ", ";
+                        Presion = datos[i].PresionMinima + "/" + datos[i].PresionMaxima;
+
+                        listaInterna.push({
+                              Nombre: "Presión",
+                              Valor: Presion
+                        });
+                  }
+                  if (datos[i].Azucar) {
+                        StringDatos += datos[i].Azucar + ", ";
+                        Azucar = datos[i].Azucar;
+
+                        listaInterna.push({
+                              Nombre: "Azúcar en sangre",
+                              Valor: Azucar
+                        });
+                  }
+                  if (datos[i].Oxigeno) {
+                        StringDatos += datos[i].Oxigeno + ", ";
+                        Oxigeno = datos[i].Oxigeno;
+
+                        listaInterna.push({
+                              Nombre: "Oxigenación",
+                              Valor: Oxigeno
+                        });
+                  }
+                  if (datos[i].Temperatura) {
+                        StringDatos += datos[i].Temperatura + ", ";
+                        Temperatura = datos[i].Temperatura;
+
+                        listaInterna.push({
+                              Nombre: "Temperatura corporal",
+                              Valor: Temperatura
+                        });
+                  }
+                  if (datos[i].Pulso) {
+                        StringDatos += datos[i].Pulso + ", ";
+                        Pulso = datos.Pulso;
+
+                        listaInterna.push({
+                              Nombre: "Pulso",
+                              Valor: Pulso
+                        });
+                  }
+                  if (datos[i].Comentarios) {
+                        Comentarios = datos[i].Comentarios;
+
+                        listaInterna.push({
+                              Nombre: "Comentarios",
+                              Valor: Comentarios
+                        });
+                  }
+
+                  listaInicial.push({
+                        Datos: StringDatos
+                  });
+            }
+
+            return [ columnasInicial, listaInicial, columnasInterno, listaInterna ];
+      }
+
+      useEffect(() => {
+           
+            const respuesta = fetch(`https://localhost:44399/api/Residente/GetSignos?cedula=${activoCi}&centro=${nomCentro}&token=${token}`).then(r => r.json());
+
+            state.signos = respuesta;
+
+            let [colInicial, datInicial, colInterno, datInterno] = renderizarDatos();
+
+            const tablaInterna = <DataTable
+                  columns={colInterno}
+                  data={datInterno}
+            />
+
+            const dataTable = <DataTable
+                  title="Signos vitales"
+                  columns={colInicial}
+                  data={datInicial}
+                  expandableRows={true}
+                  expandOnRowClicked={true}
+                  expandableRowsComponent {...tablaInterna}
+                  pagination
+            />
+
+            setTabla(dataTable);
+
+      }, [])
+
+      return (tabla);
+}
+
+export default SignosVitales;
+
+
+import { Token } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import TablaExpansible from '../componentes/TablaExpansible';
+import ExpandirTratamientos from '../componentes/ExpandirTratamientos';
+
+
+function Tratamientos() {
+
+      // //////// OBTENER VALOR DE UNA COOKIE !!!!!!!
+      // const usuario = document.cookie
+      //       .split('; ')
+      //       .find((row) => row.startsWith('usuario='))
+      //       .split('=')[1];
+      // //////////
+
+      const location = useLocation();
+      const activoCi = location.state.cedulaRes;
+      const activoNom = location.state.nomRes;
+      const token = location.state.usuToken;
+      const nomCentro = location.state.centro;
+
+      const [tratamientos, setTratamientos] = useState([]);
+
+      useEffect(() => {
+            obtenerTratamientosResidente();
+      }, []);
+
+      async function obtenerTratamientosResidente() {
+            // let datosUsu = usuario.split('|');
+            // console.log("en tratamientos " + nomCentro);
+            // let token = usuario.split('|')[2].split(':')[1];
+            await fetch(
+                  `https://localhost:44399/api/Residente/GetTratamientos?centro=${nomCentro}&cedula=${activoCi}&token=${token}`
+            )
+                  .then((response) => response.json())
+                  .then(function (data) {
+                        setTratamientos(parsearFechas(data));
+                  })
+                  .catch(function (error) {
+                        console.log(error);
+                  });
+
+      };
+
+      function parsearFechas(lista){
+            for (let i = 0; i < lista.length; i++){
+                  lista[i].FechaComienzo = lista[i].FechaComienzo.split('T')[0];
+                  lista[i].FechaFin = lista[i].FechaFin.split('T')[0];
+            }
+            return lista;
+      }
+
+      const columnas = [
+            {
+                  name: 'Descripción',
+                  selector: row => row.Descripcion,
+            },
+            {
+                  name: 'Médico',
+                  selector: row => row.Medico,
+            },
+            {
+                  name: 'Fecha de inicio',
+                  selector: row => row.FechaComienzo,
+            },
+            {
+                  name: 'Fecha de fin',
+                  selector: row => row.FechaFin,
+            }
+      ];
+
+      let tratExpandidos = <ExpandirTratamientos datos={tratamientos}/>
+      const tabla = <TablaExpansible  titulo="Tratamientos registrados" columnas={columnas} datos={tratamientos} datosExpandidos={tratExpandidos} />
+
+
+
+      return (
+            <div>
+                  <button onClick={obtenerTratamientosResidente}></button>
+                  <div>
+                        {tratamientos?.map((trat) => (
+
+                              <div>
+                                    <p>{tabla}</p>
+                                    {/* <Card key={trat.IdTratamiento} style={{ width: '18rem' }}>
+                                          <Card.Body>
+                                                <Card.Title>{trat.CiResidente}</Card.Title>
+                                                <Card.Subtitle className="mb-2 text-muted">  {trat.Descripcion}</Card.Subtitle>
+                                                <Card.Text>
+                                                      {trat.Medico}
+                                                </Card.Text>
+                                          </Card.Body>
+                                    </Card> */}
+
+                              </div>
+                        ))}
+                  </div>
+            </div>
+      );
+
+      return (
+            <p>holi</p>
+      );
+      // return (<Titulo texto="Tratamientos"/>);
+}
+
+export default Tratamientos;
