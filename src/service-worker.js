@@ -68,6 +68,7 @@ registerRoute(
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
 self.addEventListener('message', (event) => {
+  console.log("message");
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
@@ -82,15 +83,15 @@ self.addEventListener('install', e => {
 
           return cache.addAll([
               '/',
-              '/index.html',
-              '/estudios.html',
-              '/insumos.html',
-              '/trtamientos.html',
-              '/signosVitales.html',
-              '/alerta.html',
-              '/menu.html',
-              '/Home.html',
-              '/src/App.js'
+              'index.html',
+              // '../src/paginas/estudios.html',
+              // '../src/paginas/insumos.html',
+              // '../src/paginas/trtamientos.html',
+              // '../src/paginas/signosVitales.html',
+              // '../src/paginas/alerta.html',
+              // '../src/paginas/menu.html',
+              // '../src/paginas/Home.html',
+              // 'App.js'
           ]);
 
       

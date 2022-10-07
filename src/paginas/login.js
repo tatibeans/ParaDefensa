@@ -35,6 +35,12 @@ function Login(props) {
       .then((r) => r.json())
       .then(function (data) {
         if (data != null && data.TokenPWA != null) {
+          // caches.open('dynamic-v1').then(c => {
+          //   c.add([
+          //     usuLogueado, data.json()
+          //   ])
+          // })
+
           document.cookie = `usuario=nombre:${data.Nombre}|cedula:${data.Cedula}|token:${data.TokenPWA}`;
          
 

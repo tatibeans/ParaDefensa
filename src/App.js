@@ -1,14 +1,13 @@
 import React, { useState, useLayoutEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import Login from './paginas/Login';
-import Menu from './paginas/Menu';
-import Alerta from './paginas/Alerta';
-import CambiarPass from './paginas/CambiarPass';
+import Login from './paginas/login';
+import Menu from './paginas/menu';
+import Alerta from './paginas/alerta';
+import CambiarPass from './paginas/cambiarPass';
 import Home from './paginas/Home';
-import Insumos from './paginas/Insumos';
-import SignosVitales from './paginas/SignosVitales';
-import Tratamientos from './paginas/Tratamientos';
+import Insumos from './paginas/insumos';
+import SignosVitales from './paginas/signosVitales';
+import Tratamientos from './paginas/tratamientos';
 import Estudios from './paginas/estudios';
 import Consultas from './paginas/consultas';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -48,21 +47,50 @@ function App(props) {
   }
 
   const fijarResCookie = async () => {
-    let cookieUsu = valorCookie("usuario")
+    // let cookieUsu = valorCookie("usuario");
+    // console.log(cookieUsu);
+    console.log("no hago deploy");
+    let valor = document.cookie;
 
-    if (valorCookie("usuario") && activoUsu === "") {
+    if (valor != null && valor != "") {
+      valor = valor.split('; ')
+        .find((row) => row.startsWith("usuario="))
+        .split('=')[1];
+    }
+    let cookieUsu = valor;
+    if (cookieUsu != null && cookieUsu != "" && activoUsu === null) {
+      console.log("cookie no vacía");
       let datos = cookieUsu.split('|');
+      // console.log(datos);
       let ci = datos[1].split(':')[1];
       let token = datos[2].split(':')[1];
 
-      const usu = await fetch(`https://proyectocalistoortapi.azurewebsites.net/api/PWA/BuscarUsuario?cedula=${ci}&centro=${props.nomCentro}&token=${token}`).then(d => d.json()).catch(e => alert(e));
-      if (usu != null) {
-        modificarState(usu.Residentes);
-      }
-      return true;
+      const usu = await fetch(`https://proyectocalistoortapi.azurewebsites.net/api/PWA/BuscarUsuario?cedula=${ci}&centro=${props.nomCentro}&token=${token}`)
+      .then(d => d.json()).then(d => {
+        if (d != null){
+          const mods = modificarState(d.json().Residentes).then(console.log);
+          return true;
+        }
+      }).catch(e => alert(e));
+      // if (usu != null) {
+      //   // const mods = modificarState(usu.Residentes).then(console.log);
+      //   // return true;
+      // }
+
     }
     return false;
   };
+
+  const usuarioYaLogueado = async () => {
+    caches.open('dynamic-v1').then(c => {
+      let usu = c.usuLogueado;
+      if (usu != null && usu != "" && usu) {
+        modificarState(usu.Residentes);
+        return true;
+      }
+      return false;
+    })
+  }
 
   // es el residente activo
   const modUsuActivo = (e) => {
@@ -97,7 +125,7 @@ function App(props) {
           <Route path="/insumos" element={<Insumos fijarResCookie={fijarResCookie} />} />
           <Route path="/login" element={<Login nomCentro={props.nomCentro} setEstado={modificarState} />} />
 
-          <Route path="/menu" element={<Menu nomCentro={props.nomCentro} res={residentes} modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente} modificarState={modificarState}  fijarResCookie={fijarResCookie}/>} />
+          <Route path="/menu" element={<Menu nomCentro={props.nomCentro} res={residentes} modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente} modificarState={modificarState} fijarResCookie={fijarResCookie} />} />
 
           <Route path="/signosVitales" element={<SignosVitales />} />
           <Route path="/tratamientos" element={<Tratamientos />} />

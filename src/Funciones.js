@@ -1,7 +1,7 @@
 export function valorCookie(nombre){
       let valor = document.cookie;
 
-      if (valor){
+      if (valor != null && valor != ""){
             valor = valor.split('; ')
             .find((row) => row.startsWith(nombre + "="))
             .split('=')[1];
