@@ -1,19 +1,11 @@
 import Titulo from "../componentes/Titulo";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
+import {Backdrop, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Typography, Avatar, Box, Modal} from "@mui/material";
 import * as React from "react";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
-import Modal from "@mui/material/Modal";
 import {
   NoLuggageOutlined,
   SignalCellularNullSharp,
@@ -35,7 +27,7 @@ function Tratamientos({fijarResCookie}) {
   const handleClose = () => setOpenModal(false);
 
   useEffect(() => {
-    fijarResCookie()
+    //fijarResCookie()
     setOpen(!open);
     buscarTratamientos();
   }, []);
@@ -51,10 +43,12 @@ function Tratamientos({fijarResCookie}) {
       .then((r) => r.json())
       .then(function (data) {
         if (data === "No hay tratamientos ingresados.") {
+          console.log("no hay tratamientos");
           setTratamientos([]);
           setOpen(false);
         } else {
           console.log(data);
+          //console.log(data.json());
           setTratamientos(data);
           setOpen(false);
         }
@@ -195,7 +189,7 @@ function Tratamientos({fijarResCookie}) {
             boxShadow: 2,
           }}
         >
-          <Typography>No hay estudios pendientes</Typography>
+          <Typography>No hay tratamientos pendientes</Typography>
         </Box>
       </>
     );

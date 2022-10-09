@@ -24,7 +24,7 @@ function SignosVitales({fijarResCookie}) {
   const [signos, setSignos] = useState(null);
 
   useEffect(() => {
-    fijarResCookie()
+    //fijarResCookie()
     setOpen(!open);
       buscarSignos();
   }, []);
