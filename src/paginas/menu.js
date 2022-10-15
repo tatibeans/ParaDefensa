@@ -5,6 +5,7 @@ import { Dropdown, Container, Row, Col, Image, Card } from 'react-bootstrap';
 import { Box, Avatar, Select, InputLabel, MenuItem, Accordion, AccordionSummary, AccordionDetails, Typography, FormControl, Backdrop, CircularProgress } from '@mui/material'
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { SelectChangeEvent } from "@mui/material/Select";
+import { notificar } from '../Funciones';
 
 function Menu({ nomCentro, res, modUsuActivo, activoUsu, imgResidente, modificarState, fijarResCookie }) {
   const [token, setToken] = useState("");
@@ -12,26 +13,28 @@ function Menu({ nomCentro, res, modUsuActivo, activoUsu, imgResidente, modificar
 
   let navigate = useNavigate();
 
-
   useEffect(() => {
     fijarResCookie()
     cargarUsuyRes();
+
   }, []);
 
   function cargarUsuyRes() {
 
-    let usuario = document.cookie.split('; ')
-      .find((row) => row.startsWith("usuario="))
-      .split('=')[1];
-    if (activoUsu === "") {
-      if (res === "" || res == null || res.length == 0){
-        let resBuscados = buscarResidentes(usuario);
-        modificarState(resBuscados);
-      }
+    // let usuario = document.cookie.split('; ')
+    //   .find((row) => row.startsWith("usuario="))
+    //   .split('=')[1];
+    // if (activoUsu === "") {
+    //   if (res === "" || res == null || res.length == 0){
+    //     let resBuscados = buscarResidentes(usuario);
+    //     modificarState(resBuscados);
+    //   }
       modUsuActivo(res[0]);
-    }
+    // }
 
-    let tokenCookie = usuario.split("|")[2].split(":")[1];
+    let tokenCookie = document.cookie.split('; ')
+       .find((row) => row.startsWith("usuario="))
+       .split('=')[1].split("|")[2].split(":")[1];
 
 
     setToken(tokenCookie);
@@ -101,6 +104,7 @@ function Menu({ nomCentro, res, modUsuActivo, activoUsu, imgResidente, modificar
 
   function salir() {
     modUsuActivo("")
+    modificarState([]);
     navigate("/");
   }
 
@@ -140,6 +144,10 @@ function Menu({ nomCentro, res, modUsuActivo, activoUsu, imgResidente, modificar
 
   const htmlMenu = (
     <>
+    <div className="row justify-content-evenly mt-2 mb-4">
+      {console.log(activoUsu)}
+    <button onClick={evt => notificar(evt, activoUsu.Cedula, nomCentro, token)} id={"btnNotificar"}>Recibir notificaciones ahora</button>
+    </div>
       <div className="row justify-content-evenly mt-2 mb-4">
         <div className="col-xs-10 col-md-5">
           <Link

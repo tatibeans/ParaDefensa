@@ -138,24 +138,24 @@ function Tratamientos({fijarResCookie}) {
             </li>
             <li>
               <Typography>
-                Fecha Emision : {e.FechaEmision.substring(0, 10)}{" "}
+                Fecha de emisión: {e.FechaEmision.substring(0, 10)}{" "}
               </Typography>
             </li>
             <li>
               <Typography>
-                Fecha Vencimiento : {e.FechaVencimiento.substring(0, 10)}{" "}
+                Fecha de vencimiento: {e.FechaVencimiento.substring(0, 10)}{" "}
               </Typography>
             </li>
           </ul>
           <Typography onClick={handleOpen}>Medicamentos</Typography>
-          <Modal
+          {/* <Modal
             open={openModal}
             onClose={handleClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
             <Box>{medicamentos(e.Sustancia, med)}</Box>
-          </Modal>
+          </Modal> */}
         </AccordionDetails>
       </Accordion>
     ));

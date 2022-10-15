@@ -14,6 +14,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { valorCookie } from './Funciones';
+import { waitUntil } from 'workbox-core/_private';
 
 
 const history = createBrowserHistory();
@@ -39,61 +40,49 @@ function App(props) {
   }, []);
 
   const modificarState = (e) => {
-    console.log("entro dos");
-    console.log(e);
+
     e.forEach(element => {
       setresidentes((current) => [...current, element]);
-    }
+      }
     );
-
   }
 
   function yaEstaLogueado() {
 
   }
 
-  const fijarResCookie = async () => {
-    // let cookieUsu = valorCookie("usuario");
-    // console.log(cookieUsu);
+  const fijarResCookie = async function () {
     let valor = document.cookie;
-
-    if (valor != null && valor != "") {
+    if (valor != null && valor != "" && valor != undefined) {
       valor = valor.split('; ')
         .find((row) => row.startsWith("usuario="))
         .split('=')[1];
-      console.log(valor);
+      //if (activoUsu === null) {
+      console.log("cookie no vacía");
+      let datos = valor.split('|');
+      let ci = datos[1].split(':')[1];
+      let token = datos[2].split(':')[1];
 
-      let cookieUsu = valor;
-
-      if (cookieUsu != null && cookieUsu != "" && activoUsu === null) {
-        console.log("cookie no vacía");
-        let datos = cookieUsu.split('|');
-        // console.log(datos);
-        let ci = datos[1].split(':')[1];
-        let token = datos[2].split(':')[1];
-
-        const usu = await fetch(`https://proyectocalistoortapi.azurewebsites.net/api/PWA/BuscarUsuario?cedula=${ci}&centro=${props.nomCentro}&token=${token}`)
-      /*.then(d => d.json())*/.then(d => {
-          let datos = d.json();
+      
+      //const usu = await fetch(`https://proyectocalistoortapi.azurewebsites.net/api/PWA/BuscarUsuario?cedula=${ci}&centro=${props.nomCentro}&token=${token}`)
+      /*.then(d => d.json())*/
+      const usu = await fetch(`https://calisto-hilosdeplata.azurewebsites.net/api/PWA/BuscarUsuarioLogueado?cedula=${ci}&centro=${props.nomCentro}`)
+        .then(d => d.json()).then(datos => {
           if (datos != null) {
-            console.log(datos);
-
-            const mods = modificarState(datos.Residentes).then(console.log);
+            document.cookie = `usuario=nombre:${datos.Nombre}|cedula:${datos.Cedula}|token:${datos.TokenPWA}`;
+            console.log(datos.Residentes);
+            const mods = modificarState(datos.Residentes);
             return true;
           }
         }).catch(e => alert(e));
-        // if (usu != null) {
-        //   // const mods = modificarState(usu.Residentes).then(console.log);
-        //   // return true;
-        // }
 
-
-
-      }
+      //}
+      return true;
     } else {
       console.log("cookie vacía");
+      return false;
     }
-    return false;
+
   };
 
   const usuarioYaLogueado = async () => {
@@ -109,7 +98,7 @@ function App(props) {
 
   // es el residente activo
   const modUsuActivo = (e) => {
-    console.log(e);
+
     setActivoUsu(e);
     setActivoNom(e.Nombre);
     setActivoCi(e.Cedula);
@@ -126,12 +115,15 @@ function App(props) {
 
     <React.StrictMode>
       <BrowserRouter
+        basename="/"
         location={state.location}
         navigationType={state.action}
         navigator={history}>
         <Routes>
 
-          <Route exact path="/" element={<Home nomCentro={props.nomCentro} setEstado={modificarState} res={residentes} ingreso={ingresoUnaVez} setIngreso={setIngreso} fijarResCookie={fijarResCookie} logueado={logueado} />} />
+          <Route exact path="/" element={<Home nomCentro={props.nomCentro} setEstado={modificarState} 
+          res={residentes} ingreso={ingresoUnaVez} setIngreso={setIngreso} fijarResCookie={fijarResCookie}
+            modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente} />} />
 
           <Route path="/alerta" element={<Alerta fijarResCookie={fijarResCookie} />} />
           <Route path="/cambiarPass" element={<CambiarPass fijarResCookie={fijarResCookie} />} />
@@ -140,7 +132,9 @@ function App(props) {
           <Route path="/insumos" element={<Insumos fijarResCookie={fijarResCookie} />} />
           <Route path="/login" element={<Login nomCentro={props.nomCentro} setEstado={modificarState} />} />
 
-          <Route path="/menu" element={<Menu nomCentro={props.nomCentro} res={residentes} modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente} modificarState={modificarState} fijarResCookie={fijarResCookie} />} />
+          <Route path="/menu" element={<Menu nomCentro={props.nomCentro} res={residentes} 
+          modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente} 
+          modificarState={modificarState} fijarResCookie={fijarResCookie} />} />
 
           <Route path="/signosVitales" element={<SignosVitales />} />
           <Route path="/tratamientos" element={<Tratamientos />} />

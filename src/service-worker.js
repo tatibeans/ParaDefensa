@@ -83,15 +83,7 @@ self.addEventListener('install', e => {
 
           return cache.addAll([
               '/',
-              'index.html',
-              '/paginas/estudios.js',
-              '/paginas/insumos.js',
-              '/paginas/trtamientos.js',
-              '/paginas/signosVitales.js',
-              '/paginas/alerta.html',
-              '/paginas/menu.html',
-              '/paginas/Home.html',
-              'App.js'
+              'index.html'
           ]);
 
       

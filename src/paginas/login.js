@@ -44,6 +44,9 @@ function Login(props) {
           document.cookie = `usuario=nombre:${data.Nombre}|cedula:${data.Cedula}|token:${data.TokenPWA}`;
          
 
+
+          //////
+          props.setEstado([]);
           props.setEstado(data.Residentes);
           setIsLoading(false);
           if (!props.ingreso){
