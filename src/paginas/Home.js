@@ -10,26 +10,42 @@ import { borrarCookie, valorCookie } from '../Funciones';
 
 
 export default function Home(props) {
+      let navigate = useNavigate();
+
       useEffect(() => {
-            llamarNotifs();
-      }, []);
-      
-      async function llamarNotifs() {
-      
+      });
+
+      let valor = document.cookie;
+
+      if (valor != null && valor != "") {
+            valor = valor
+                  .split("; ")
+                  .find((row) => row.startsWith("usuario="))
+                  .split("=")[1];
       }
 
-      // res={residentes} modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente} modificarState={modificarState} fijarResCookie={fijarResCookie}
+
+      async function redirigir() {
+            const promesa = await props.fijarResCookie();
+            if (promesa) return navigate("/menu");
+
+
+            return <Menu nomCentro={props.nomCentro} res={props.res} ingreso={props.ingreso}
+                  setIngreso={props.setIngreso} modUsuActivo={props.modUsuActivo}
+                  activoUsu={props.activoUsu} imgResidente={props.imgResidente}
+                  modificarState={props.modificarState} fijarResCookie={props.fijarResCookie}
+                  setresidentes={props.setresidentes} />;
+
+
+      }
      
-            if (!props.logueado) {
-                  {console.log("if para enviar al login")}
-                  return <Login nomCentro={props.nomCentro} setEstado={props.setEstado} ingreso={props.ingreso} setIngreso={props.setIngreso} />;
-            } else {
-                  {console.log("if para el menú")}
-                  
-                  return <Menu nomCentro={props.nomCentro} res={props.res} ingreso={props.ingreso} setIngreso={props.setIngreso} modUsuActivo={props.modUsuActivo} 
-                  activoUsu={props.activoUsu} imgResidente={props.imgResidente} modificarState={props.modificarState} fijarResCookie={props.fijarResCookie}/>;
-            }
-    /*  })*/
-      
+      if (!props.logueado && document.cookie.split("; ").find((row) => row.startsWith("usuario=")) == null) {
+            console.log("if para enviar al login")
+            return <Login nomCentro={props.nomCentro} setEstado={props.setEstado} ingreso={props.ingreso} setIngreso={props.setIngreso} />;
+      } else {
+            console.log("if para el menú")
+            redirigir();
+      }
+
 
 }

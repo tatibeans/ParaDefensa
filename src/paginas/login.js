@@ -32,26 +32,18 @@ function Login(props) {
         cedula.current.value
       }&pass=${password.current.value}&centro=${nomCentro}`
     )
-      .then((r) => r.json())
+      .then( (r) => r.json())
       .then(function (data) {
         if (data != null && data.TokenPWA != null) {
-          // caches.open('dynamic-v1').then(c => {
-          //   c.add([
-          //     usuLogueado, data.json()
-          //   ])
-          // })
 
           document.cookie = `usuario=nombre:${data.Nombre}|cedula:${data.Cedula}|token:${data.TokenPWA}`;
          
-
-
           //////
           props.setEstado([]);
           props.setEstado(data.Residentes);
           setIsLoading(false);
           if (!props.ingreso){
             props.setIngreso(true);
-            empezarIntervalo();
           }
           return navigate("/menu");
         } else {
@@ -62,42 +54,6 @@ function Login(props) {
   }
 
 
-  function empezarIntervalo(){
-    const intervalo = setInterval(() => {
-      
-      let usu = fetch("https://proyectocalistoortapi.azurewebsites.net/api/PWA/LogIn?cedula=51364829&pass=Calisto2022!&centro=HilosDePlata");
-      if (usu != null){
-        if (window.Notification){
-          if (Notification.permission === 'granted'){
-            new Notification("¡Notificaciones activadas! Buen día " + usu.Nombre);
-          } else {
-            Notification.requestPermission(permiso => {
-              if (permiso === 'granted') new Notification("¡Gracias por activar sus notificaciones! Buen día " + usu.Nombre);
-              
-            })
-          }
-        }
-      }
-    }, 1000 * 60 * 60 * 24);
-  }
-
-  // function empezarIntervalo(){
-  //   const intervalo = setInterval(() => {
-  //     let horaActual = new Date().getHours();
-  //     while(horaActual < 10 || horaActual > 14){
-  //       setTimeout(1000 * 60 * 60);
-  //     }
-
-      
-  //   }, 1000 * 60 * 60 * 24);
-  // }
-
-  function serializarFecha(fecha) {
-    //2022-09-06T12:20:28.75
-    let sinHora = fecha.split("T")[0];
-    let numeros = sinHora.split("-");
-    return numeros[2] + "/" + numeros[1] + "/" + numeros[0];
-  }
 
   return (
     <div className="divHeader">

@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import {useNavigate} from 'react-router-dom';
 
 const nombreCentro = "HilosDePlata";
 
@@ -19,3 +20,4 @@ reportWebVitals();
 if (navigator.serviceWorker) {
   navigator.serviceWorker.register('service-worker.js');
 }
+

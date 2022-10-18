@@ -43,12 +43,9 @@ function Tratamientos({fijarResCookie}) {
       .then((r) => r.json())
       .then(function (data) {
         if (data === "No hay tratamientos ingresados.") {
-          console.log("no hay tratamientos");
           setTratamientos([]);
           setOpen(false);
         } else {
-          console.log(data);
-          //console.log(data.json());
           setTratamientos(data);
           setOpen(false);
         }
@@ -81,7 +78,6 @@ function Tratamientos({fijarResCookie}) {
   );
 
   const medicamentos = (sus, m) => {
-    console.log(m);
     m?.map((e) => {
       if (e.Sustancia === sus) {
         return (
@@ -118,7 +114,6 @@ function Tratamientos({fijarResCookie}) {
   };
 
   const recetas = (r, med) => {
-    console.log(r);
     return r?.map((e) => (
       <Accordion>
         <AccordionSummary

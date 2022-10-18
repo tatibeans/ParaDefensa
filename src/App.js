@@ -35,15 +35,17 @@ function App(props) {
 
   let logueado = false;
 
-  useEffect(() => {
-    logueado = fijarResCookie();
+  useEffect(async () => {
+    logueado = await fijarResCookie();
   }, []);
+
+  
 
   const modificarState = (e) => {
 
     e.forEach(element => {
       setresidentes((current) => [...current, element]);
-      }
+    }
     );
   }
 
@@ -57,29 +59,23 @@ function App(props) {
       valor = valor.split('; ')
         .find((row) => row.startsWith("usuario="))
         .split('=')[1];
-      //if (activoUsu === null) {
-      console.log("cookie no vacía");
+
       let datos = valor.split('|');
       let ci = datos[1].split(':')[1];
       let token = datos[2].split(':')[1];
 
-      
-      //const usu = await fetch(`https://proyectocalistoortapi.azurewebsites.net/api/PWA/BuscarUsuario?cedula=${ci}&centro=${props.nomCentro}&token=${token}`)
-      /*.then(d => d.json())*/
       const usu = await fetch(`https://calisto-hilosdeplata.azurewebsites.net/api/PWA/BuscarUsuarioLogueado?cedula=${ci}&centro=${props.nomCentro}`)
-        .then(d => d.json()).then(datos => {
-          if (datos != null) {
-            document.cookie = `usuario=nombre:${datos.Nombre}|cedula:${datos.Cedula}|token:${datos.TokenPWA}`;
-            console.log(datos.Residentes);
-            const mods = modificarState(datos.Residentes);
-            return true;
-          }
-        }).catch(e => alert(e));
-
-      //}
-      return true;
+      .catch((e) => {alert(e.message)});
+      const jeison = await usu.json();
+      if (jeison != null) {
+        document.cookie = `usuario=nombre:${jeison.Nombre}|cedula:${jeison.Cedula}|token:${jeison.TokenPWA}`;
+        setresidentes([]);
+        const mods = modificarState(jeison.Residentes);
+        return true;
+      } else {
+        console.log("datos nulos");
+      }
     } else {
-      console.log("cookie vacía");
       return false;
     }
 
@@ -121,9 +117,10 @@ function App(props) {
         navigator={history}>
         <Routes>
 
-          <Route exact path="/" element={<Home nomCentro={props.nomCentro} setEstado={modificarState} 
-          res={residentes} ingreso={ingresoUnaVez} setIngreso={setIngreso} fijarResCookie={fijarResCookie}
-            modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente} />} />
+          <Route exact path="/" element={<Home nomCentro={props.nomCentro} setEstado={modificarState}
+            res={residentes} ingreso={ingresoUnaVez} setIngreso={setIngreso} fijarResCookie={fijarResCookie}
+            modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente}
+            logueado={logueado} setresidentes={setresidentes}/>} />
 
           <Route path="/alerta" element={<Alerta fijarResCookie={fijarResCookie} />} />
           <Route path="/cambiarPass" element={<CambiarPass fijarResCookie={fijarResCookie} />} />
@@ -132,12 +129,12 @@ function App(props) {
           <Route path="/insumos" element={<Insumos fijarResCookie={fijarResCookie} />} />
           <Route path="/login" element={<Login nomCentro={props.nomCentro} setEstado={modificarState} />} />
 
-          <Route path="/menu" element={<Menu nomCentro={props.nomCentro} res={residentes} 
-          modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente} 
-          modificarState={modificarState} fijarResCookie={fijarResCookie} />} />
+          <Route path="/menu" element={<Menu nomCentro={props.nomCentro} res={residentes}
+            modUsuActivo={modUsuActivo} activoUsu={activoUsu} imgResidente={imgResidente}
+            modificarState={modificarState} fijarResCookie={fijarResCookie} setresidentes={setresidentes}/>} />
 
-          <Route path="/signosVitales" element={<SignosVitales />} />
-          <Route path="/tratamientos" element={<Tratamientos />} />
+          <Route path="/signosVitales" element={<SignosVitales fijarResCookie={fijarResCookie} />} />
+          <Route path="/tratamientos" element={<Tratamientos fijarResCookie={fijarResCookie} />} />
         </Routes>
       </BrowserRouter>
     </React.StrictMode>
