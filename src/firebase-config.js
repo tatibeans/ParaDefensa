@@ -9,13 +9,14 @@ import { initializeApp, getAnalytics, getDatabase } from 'firebase';
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBLDSfGqF3oymJhJ-C_YefAsW0ShjHNRlQ",
-  authDomain: "hilos-de-plata-f3c15.firebaseapp.com",
-  projectId: "hilos-de-plata-f3c15",
-  storageBucket: "hilos-de-plata-f3c15.appspot.com",
-  messagingSenderId: "121265900713",
-  appId: "1:121265900713:web:1ad3031fb360d9342d2db8"
+  apiKey: "AIzaSyCm69phuGXfMDWqey5CqzFrb4oxsAvTcak",
+  authDomain: "hilos-de-plata-calisto.firebaseapp.com",
+  projectId: "hilos-de-plata-calisto",
+  storageBucket: "hilos-de-plata-calisto.appspot.com",
+  messagingSenderId: "539217773186",
+  appId: "1:539217773186:web:9341654b61d5d8701b2a9b"
 };
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
